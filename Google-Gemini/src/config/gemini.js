@@ -53,7 +53,10 @@ async function runchat(prompt) {
     return responseText;
   } catch (error) {
     console.error("Gemini API Error:", error);
-    return "Error fetching response from Gemini API.";
+    if (error.message.includes("429")) {
+      return "⚠️ Rate limit exceeded. Please try again later.";
+    }
+    return "❌ Error fetching response from Gemini API.";
   }
 }
 
