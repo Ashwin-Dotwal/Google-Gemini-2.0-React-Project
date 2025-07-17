@@ -1,19 +1,22 @@
+// src/runchat.js
+
 import {
   GoogleGenerativeAI,
   HarmCategory,
   HarmBlockThreshold,
 } from "@google/generative-ai";
 
-const MODEL_NAME = "gemini-1.5-pro"; // ✅ no 'models/' prefix
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const MODEL_NAME = "gemini-pro";
+const API_KEY = "AIzaSyCzoUCcvFLLk4eTYAxJ5ekPFvnrY2ENJG0"
 
-if (!API_KEY) {
-  throw new Error("Missing Gemini API key. Check your .env setup.");
-}
+
 
 async function runchat(prompt) {
   const genAI = new GoogleGenerativeAI(API_KEY);
-  const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+
+  const model = genAI.getGenerativeModel({
+    model: MODEL_NAME,
+  });
 
   const generationConfig = {
     temperature: 0.9,
@@ -41,22 +44,21 @@ async function runchat(prompt) {
     },
   ];
 
-  try {
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig,
-      safetySettings,
-    });
+  const chat = model.startChat({
+    generationConfig,
+    safetySettings,
+    history: [],
+  });
 
-    const responseText = result.response.candidates[0].content.parts[0].text;
-    console.log(responseText);
-    return responseText;
-  } catch (error) {
-    console.error("Gemini API Error:", error);
-    if (error.message.includes("429")) {
-      return "⚠️ Rate limit exceeded. Please try again later.";
-    }
-    return "❌ Error fetching response from Gemini API.";
+  try {
+    const result = await chat.sendMessage(prompt);
+    const response = result.response;
+    const text = response.text();
+    console.log("Gemini Response:", text);
+    return text;
+  } catch (err) {
+    console.error("Error generating content:", err);
+    return "Error: Unable to generate response.";
   }
 }
 

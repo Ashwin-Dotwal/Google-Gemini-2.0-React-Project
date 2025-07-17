@@ -4,21 +4,37 @@ import runchat from "../config/gemini";
 export const Context = createContext();
 
 const ContextProvider = (props) => {
-  const [response, setResponse] = useState("");
+  const [input, setInput] = useState("");
+  const [recentPrompt, setRecentPrompt] = useState("");
+  const [prevPrompt, setPrevPrompt] = useState([]);
+  const [showResult, setShowResult] = useState(false);
+  const [loading, setLoding] = useState(false);
+  const [resultData, setResultData] = useState("");
 
   const onSent = async (prompt) => {
-    const reply = await runchat(prompt);
-    setResponse(reply);
+    setResultData("")
+    setLoding(true)
+    setShowResult(true)
+    setRecentPrompt(input)
+    const response = await runchat(input)
+    setResultData(response)
+    setLoding(false)
+    setInput("")
+  
   };
-
-  // Only runs once on mount
-  useEffect(() => {
-    onSent("What is React JS?");
-  }, []);
-
+  
   const contextValue = {
-    response,
-    sendPrompt: onSent,
+    prevPrompt,
+    setPrevPrompt,
+    onSent,
+    setRecentPrompt,
+    recentPrompt,
+    showResult,
+    loading,
+    resultData,
+    input,
+    setInput,
+   
   };
 
   return (
