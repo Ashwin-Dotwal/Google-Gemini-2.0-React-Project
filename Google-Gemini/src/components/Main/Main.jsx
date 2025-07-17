@@ -58,7 +58,7 @@ const {onSent,recentPrompt,showResult,loading,resultData,setInput,input} = useCo
               <hr />
 
             </div>
-               :<div dangerouslySetInnerHTML={{ __html: resultData }}></div>}
+               :<p dangerouslySetInnerHTML={{ __html: resultData }}></p>}
              
 
 
@@ -74,7 +74,8 @@ const {onSent,recentPrompt,showResult,loading,resultData,setInput,input} = useCo
             <div>
               <img src={assets.gallery_icon} alt=""/>
               <img src={assets.mic_icon} alt="" />
-              <img onClick={()=>onSent()} src={assets.send_icon} alt="" />
+              {input?<img onClick={()=>onSent()} src={assets.send_icon} alt="" />:null}
+              
             </div>
           </div> 
          <p className="bottom-info">
